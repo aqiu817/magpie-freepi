@@ -1,0 +1,29 @@
+{
+  "name": "magpie-freepi",
+  "version": "0.1.0",
+  "description": "OpenCode provider plugin: FreePi (api.freepi.ai) free ad-supported model gateway for magpie",
+  "type": "module",
+  "main": "./index.mjs",
+  "files": ["index.mjs", "lib", "README.md", "README.en.md", "LICENSE"],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "magpie",
+    "magpie-plugin",
+    "freepi",
+    "auth",
+    "provider"
+  ],
+  "license": "MIT",
+  "author": "aqiu817",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aqiu817/magpie-freepi.git"
+  },
+  "homepage": "https://github.com/aqiu817/magpie-freepi#readme",
+  "bugs": "https://github.com/aqiu817/magpie-freepi/issues",
+  "magpie": {
+    "icon": "https://freepi.ai/icon.svg",
+    "maxConcurrency": 4
+  }
+}
