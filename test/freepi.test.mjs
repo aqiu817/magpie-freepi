@@ -43,17 +43,14 @@ async function withFetch(routes, run) {
 const noop = async () => {}
 
 const SAMPLE_CATALOG = {
-  min: "0.6.2",
-  latest: "0.6.14",
+  min: "0.6.16",
+  latest: "0.6.16",
   models: [
-    { id: "deepseek-v4-flash", name: "DeepSeek V4 Flash · 🔥 Free Unlimited: limited time" },
+    { id: "deepseek-v4-flash", name: "DeepSeek V4 Flash · 1x usage" }, // no tilde
     { id: "claude-haiku-5.5", name: "Claude Haiku 5.5 · ~2.0x usage" },
     { id: "claude-sonnet-5.5", name: "Claude Sonnet 5.5 · unavailable", unavailable: true },
     { id: "gpt-6.1-sol-flex", name: "GPT-6.1 Sol Flex · slower · ~41x usage" },
-    {
-      id: "laguna-s-2.1",
-      name: "Laguna S 2.1 (Poolside) · free preview, rate-limited · free, then ~1.8x usage",
-    },
+    { id: "particle", name: "Particle · ~1x usage" },
     { id: "solar-pro-4", name: "Solar Pro 4 · ~0.6x usage" },
     { nope: true },
   ],
@@ -82,14 +79,13 @@ test("parseCatalog: filters unavailable, extracts rate/free, cleans names", () =
   const list = parseCatalog(SAMPLE_CATALOG)
   assert.equal(list.length, 5)
   const byId = Object.fromEntries(list.map((m) => [m.id, m]))
-  assert.equal(byId["deepseek-v4-flash"].free, true)
-  assert.equal(byId["deepseek-v4-flash"].rate, null)
+  assert.equal(byId["deepseek-v4-flash"].rate, "1") // tilde-less "1x usage" still parses
   assert.equal(byId["deepseek-v4-flash"].name, "DeepSeek V4 Flash")
   assert.equal(byId["claude-haiku-5.5"].rate, "2.0")
   assert.equal(byId["claude-haiku-5.5"].free, false)
+  assert.equal(byId["particle"].rate, "1")
   assert.equal(byId["gpt-6.1-sol-flex"].rate, "41")
-  assert.equal(byId["laguna-s-2.1"].rate, "1.8")
-  assert.equal(byId["laguna-s-2.1"].free, false)
+  assert.equal(byId["solar-pro-4"].rate, "0.6")
   assert.ok(!("claude-sonnet-5.5" in byId))
 })
 
@@ -405,7 +401,8 @@ test("provider.models: live catalog maps rate/free; failure keeps magpie's list"
     const out = await hooks.provider.models({ models: withApi }, { auth: { type: "oauth", access: "jwt" } })
     assert.ok(!("claude-sonnet-5.5" in out))
     assert.equal(out["claude-haiku-5.5"].rate, 2)
-    assert.equal(out["deepseek-v4-flash"].free, true)
+    assert.equal(out["deepseek-v4-flash"].rate, 1)
+    assert.equal(out["deepseek-v4-flash"].free, undefined) // no promo marker any more
     assert.equal(out["claude-haiku-5.5"].api.id, "claude-haiku-5.5") // not the base model's
     assert.equal(out["solar-pro-4"].limit.context, 524288) // per-model limit, not the base's
     assert.equal(out["solar-pro-4"].tool_call, true)

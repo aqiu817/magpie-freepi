@@ -26,12 +26,15 @@ magpie provider test freepi
 
 ## 模型
 
-以 magpie 模型选择器实时列表为准。上游目录自带两类标注，插件会转换显示：
+以 magpie 模型选择器实时列表为准。**每个模型都按自己的倍率消耗每日额度**——此前的免费不限量活动已结束。上游目录自带倍率标注，插件会转换显示：
 
-- 🔥 **Free Unlimited**（限时免费不限量）：如 `deepseek-v4-flash`、`deepseek-v4.1-flash`、`glm-5.3-flash`、`particle`
-- **倍率模型**（`~Nx usage`）：如 `claude-haiku-5.5`（2x）、`solar-pro-4`（0.6x）、`gpt-6.1-sol-flex`（41x）等；另有约 7 个 uncensored/abliterated 微调模型（上游归入 defense 分区，倍率 20–60x）
+- `deepseek-v4-flash` / `particle`（~1x）是日常最省的选择，`glm-5.3-flash` ~1.5x、`solar-pro-4` ~0.6x
+- 高端模型 2–60x（`claude-haiku-5.5` 2x、`deepseek-v4-pro` 18x、uncensored/abliterated 微调 20–60x），`deepseek-v4.1-flash-1017-ultrafast` 高达 ~295x——选择前留意倍率
+- 偶尔仍会有免费活动（🔥 Free Unlimited）出现；活动期间插件会自动把相应模型标为 free
 
-上下文/输出上限来自 [models.dev](https://models.dev)（按上游 `stats_id` 反查）：多数模型 1M 级上下文，`gpt-oss-120b-speed` 为 32k；未收录模型按 128k/16k 保守标注。上游可能另有每请求限制。
+剩余每日额度（当前 15,000 credits，UTC 零点重置）显示在账号卡片和 `magpie quota` 里。
+
+上下文/输出上限来自 [models.dev](https://models.dev)（按上游 `stats_id` 反查）：多数模型 1M 级上下文；未收录模型按 128k/16k 保守标注。上游可能另有每请求限制。
 
 ## 选项
 

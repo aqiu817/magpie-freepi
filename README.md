@@ -26,12 +26,15 @@ In the app: Plugins → Add → enter the path/repo → sign in on the freepi ro
 
 ## Models
 
-Check the live list in magpie's model picker. The upstream name carries badges the plugin converts:
+Check the live list in magpie's model picker. **Every model consumes the daily credits allowance at its usage rate** — the former free-unlimited promotion has ended. The upstream name carries the rate and the plugin converts it to a badge:
 
-- 🔥 **Free Unlimited** (limited time): `deepseek-v4-flash`, `deepseek-v4.1-flash`, `glm-5.3-flash`, `particle`
-- **Rated models** (`~Nx usage`): e.g. `claude-haiku-5.5` (2x), `solar-pro-4` (0.6x), `gpt-6.1-sol-flex` (41x); plus ~7 uncensored/abliterated fine-tunes (upstream "defense" section, 20–60x)
+- `deepseek-v4-flash` / `particle` (~1x) are the cheapest everyday picks, `glm-5.3-flash` ~1.5x, `solar-pro-4` ~0.6x
+- Premium models run 2–60x (`claude-haiku-5.5` 2x, `deepseek-v4-pro` 18x, uncensored/abliterated fine-tunes 20–60x), and `deepseek-v4.1-flash-1017-ultrafast` burns ~295x — watch the badge before selecting
+- Occasional free promotions (🔥 Free Unlimited) still appear from time to time; when one is active the plugin flags those models as free automatically
 
-Context/output limits come from [models.dev](https://models.dev) (matched via the upstream `stats_id`): most models are ~1M context, `gpt-oss-120b-speed` is 32k; unmatched entries default to 128k/16k. The upstream may still cap per request.
+Your remaining daily credits (currently 15,000, resetting at UTC midnight) show on the account card and in `magpie quota`.
+
+Context/output limits come from [models.dev](https://models.dev) (matched via the upstream `stats_id`): most models are ~1M context; unmatched entries default to 128k/16k. The upstream may still cap per request.
 
 ## Options
 
