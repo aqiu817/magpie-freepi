@@ -4,7 +4,7 @@
   "description": "OpenCode provider plugin: FreePi (api.freepi.ai) free ad-supported model gateway for magpie",
   "type": "module",
   "main": "./index.mjs",
-  "files": ["index.mjs", "lib", "README.md", "README.en.md", "LICENSE"],
+  "files": ["index.mjs", "lib", "README.md", "README.zh.md", "LICENSE"],
   "keywords": [
     "opencode",
     "opencode-plugin",

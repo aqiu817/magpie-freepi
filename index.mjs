@@ -69,6 +69,20 @@ export const FreePiPlugin = async (input) => {
   const opts = () => input?.magpie?.options ?? input?.magpie?.option ?? {}
   let adCount = 0 // banner impressions reported by this host process
 
+  // The upstream forces clients whose x-client-version is below /client-version.min
+  // to update. Re-check on startup and every 12h so the pinned version never goes
+  // stale; authHeaders read the module-level pin on every request, so a bump takes
+  // effect immediately. Anonymous call, failures swallowed, timer never holds the host.
+  const watchVersion = async () => {
+    try {
+      const r = await getJson(`${BASE}/client-version`)
+      if (r.status === 200 && r.body) calibrateClientVersion(r.body)
+    } catch {}
+  }
+  watchVersion()
+  const versionTimer = setInterval(watchVersion, 12 * 3600 * 1000)
+  versionTimer.unref?.()
+
   return {
     config: async (cfg) => {
       cfg.provider ??= {}

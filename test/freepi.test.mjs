@@ -108,15 +108,29 @@ test("staticModels: one entry per fallback id, models.dev limits where mapped", 
 })
 
 test("config hook declares freepi without clobbering user config", async () => {
-  const hooks = await FreePiPlugin({})
-  const cfg = { provider: { existing: { name: "Keep" } } }
-  await hooks.config(cfg)
-  assert.equal(cfg.provider.existing.name, "Keep")
-  const p = cfg.provider.freepi
-  assert.equal(p.name, "FreePi")
-  assert.equal(p.npm, "@ai-sdk/openai-compatible")
-  assert.equal(p.api, `${BASE}/v1`)
-  assert.equal(Object.keys(p.models).length, FALLBACK_MODEL_IDS.length)
+  // wrapped so the startup version watch hits the mock instead of the real network
+  await withFetch([], async () => {
+    const hooks = await FreePiPlugin({})
+    const cfg = { provider: { existing: { name: "Keep" } } }
+    await hooks.config(cfg)
+    assert.equal(cfg.provider.existing.name, "Keep")
+    const p = cfg.provider.freepi
+    assert.equal(p.name, "FreePi")
+    assert.equal(p.npm, "@ai-sdk/openai-compatible")
+    assert.equal(p.api, `${BASE}/v1`)
+    assert.equal(Object.keys(p.models).length, FALLBACK_MODEL_IDS.length)
+  })
+})
+
+test("version watch: startup pull calibrates the pin and failures are swallowed", async () => {
+  await withFetch(
+    [["/client-version", () => json({ min: "0.9.0", latest: "0.9.1", models: [] })]],
+    async () => {
+      await FreePiPlugin({})
+      await new Promise((r) => setTimeout(r, 20))
+      assert.equal(getClientVersion(), "0.9.1")
+    },
+  )
 })
 
 test("oauth authorize: consent before polling, then success with saved fields", async () => {

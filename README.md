@@ -1,64 +1,66 @@
 # magpie-freepi
 
-把 [free-pi](https://freepi.ai)（`api.freepi.ai`，看广告换免费模型的聚合网关）接入 [magpie](https://usemagpie.ai) 的供应商插件。直连上游，无需任何本地代理或额外进程。
+English · [简体中文](README.zh.md)
 
-非官方插件，通过逆向 free-pi-cli 的协议实现（结构同 [FreePi2API](https://github.com/ErfanBagheri404/FreePi2API)）。
+A [magpie](https://usemagpie.ai) provider plugin for [free-pi](https://freepi.ai) (`api.freepi.ai`), the ad-supported free model gateway. Talks straight to the upstream — no local proxy, no extra process.
 
-## 特性
+Unofficial; the protocol was reverse-engineered from free-pi-cli (same shape as [FreePi2API](https://github.com/ErfanBagheri404/FreePi2API)).
 
-- **直连上游**：登录凭据保存在 magpie 的 `plugin-auth.json`（权限 600），请求自动走 magpie 为该供应商设置的代理（可在选项中切直连）。
-- **GitHub 设备码登录**：应用内点击登录 → 浏览器输入代码即可，无需 API key。
-- **动态模型目录**：实时拉取上游目录（当前 26 个可用模型），自动标注免费模型与倍率；上游不可达时回退内置静态表。
-- **真实每日额度**：额度页显示 free-pi 的每日 credits 额度与 UTC 零点重置时间，路由可据此权衡账号。
-- **广告自动上报**：free-pi 要求客户端展示广告才放行 completion；插件在每次请求前自动取一条横幅广告并上报曝光（不点击、不阻塞、失败不影响请求），上报计数可在账号卡片查看。
+## Features
 
-## 安装
+- **Direct upstream**: credentials live in magpie's `plugin-auth.json` (mode 600); requests ride magpie's proxy chain for this provider (switchable to direct via options).
+- **GitHub device-code sign-in**: click login in the app, enter the code in your browser — no API key.
+- **Live model catalog** (26 available models at the moment) with free/usage-rate badges from the upstream, falling back to a built-in static list when unreachable.
+- **Real daily quota**: the account card shows free-pi's daily credits and its UTC-midnight reset, so routing can weigh the account.
+- **Automatic ad impressions**: free-pi only serves completions when the client reports banner impressions; the plugin fetches one banner and reports the impression before each request (never clicks, never blocks, failures are swallowed). The count is visible on the account card.
+
+## Install
 
 ```sh
-magpie plugin add github:aqiu817/magpie-freepi   # 或本地文件夹路径
-magpie plugin login freepi                        # 浏览器完成 GitHub 设备码授权
+magpie plugin add github:aqiu817/magpie-freepi   # or a local folder path
+magpie plugin login freepi                        # finish the GitHub device flow in your browser
 magpie provider test freepi
 ```
 
-应用内：插件 → 添加插件 → 填入路径/仓库名 → 在 freepi 行登录。
+In the app: Plugins → Add → enter the path/repo → sign in on the freepi row.
 
-## 模型
+## Models
 
-以 magpie 模型选择器实时列表为准。上游目录自带两类标注，插件会转换显示：
+Check the live list in magpie's model picker. The upstream name carries badges the plugin converts:
 
-- 🔥 **Free Unlimited**（限时免费不限量）：如 `deepseek-v4-flash`、`deepseek-v4.1-flash`、`glm-5.3-flash`、`particle`
-- **倍率模型**（`~Nx usage`）：如 `claude-haiku-5.5`（2x）、`solar-pro-4`（0.6x）、`gpt-6.1-sol-flex`（41x）等；另有约 7 个 uncensored/abliterated 微调模型（上游归入 defense 分区，倍率 20–60x）
+- 🔥 **Free Unlimited** (limited time): `deepseek-v4-flash`, `deepseek-v4.1-flash`, `glm-5.3-flash`, `particle`
+- **Rated models** (`~Nx usage`): e.g. `claude-haiku-5.5` (2x), `solar-pro-4` (0.6x), `gpt-6.1-sol-flex` (41x); plus ~7 uncensored/abliterated fine-tunes (upstream "defense" section, 20–60x)
 
-上下文/输出上限来自 [models.dev](https://models.dev)（按上游 `stats_id` 反查）：多数模型 1M 级上下文，`gpt-oss-120b-speed` 为 32k；未收录模型按 128k/16k 保守标注。上游可能另有每请求限制。
+Context/output limits come from [models.dev](https://models.dev) (matched via the upstream `stats_id`): most models are ~1M context, `gpt-oss-120b-speed` is 32k; unmatched entries default to 128k/16k. The upstream may still cap per request.
 
-## 选项
+## Options
 
-在 插件 → 已安装 → freepi 的选项里以 JSON 设置（或 `magpie plugin options freepi '{"direct":true}'`）：
+Set as JSON under Plugins → Installed → freepi options (or `magpie plugin options freepi '{"direct":true}'`):
 
-| 选项 | 默认 | 说明 |
+| Option | Default | Description |
 |---|---|---|
-| `direct` | `false` | `true` 时绕过 magpie 代理链直连上游 |
-| `adCount` | `true` | 在账号卡片以 aside 窗口显示本次运行已上报的广告曝光数（不参与路由） |
+| `direct` | `false` | Bypass magpie's proxy chain and hit the upstream directly |
+| `adCount` | `true` | Show an aside window with this run's reported impression count (never used by routing) |
 
-## 免责声明
+## Disclaimer
 
-- **非官方**：本插件与 free-pi 无关；协议逆向自 free-pi-cli，`consent`、版本门槛、广告接口随时可能变更导致失效。
-- **广告机制**：free-pi 以广告收入支付推理成本，插件仿照 headless 代理的通行做法自动上报横幅曝光（仅曝光、不点击）。请知悉并自行判断是否符合你的使用意愿；如希望以真实浏览支持服务方，请使用官方 CLI。
-- **数据提示**：上游目录标注 `muse-spark-1.3-contributor` 会用你的数据训练（free-pi + Meta）；登录时上游亦要求同意「会话可能用于训练模型」条款。介意者请避开相关模型或自行斟酌。
-- **额度消耗**：倍率模型按上游规则消耗每日 credits，用完进入慢车道或等待。
-- 仅供个人使用，请勿用于绕过付费服务的生产场景。
+- **Unofficial**: not affiliated with free-pi; the protocol is reverse-engineered and consent/version/ad endpoints may change and break at any time.
+- **Ads**: free-pi pays for inference with ad revenue. The plugin mirrors what headless proxies do — report banner impressions automatically (impressions only, never clicks). Use the official CLI if you'd rather support the service with real browsing.
+- **Data**: the upstream marks `muse-spark-1.3-contributor` as training on your data (free-pi + Meta), and sign-in requires consenting to sessions possibly being used for training.
+- **Quota**: rated models consume daily credits per the upstream's rules; exhausted credits fall back to a slower lane or a wait.
+- Personal use only.
 
-## 开发
+## Development
 
 ```sh
 node --test test/freepi.test.mjs
 ```
 
 ```
-index.mjs            # 入口：FreePiPlugin（唯一插件导出）+ _internal
-lib/upstream.mjs     # 上游契约：常量/版本自校准/头/device flow/广告门
-lib/catalog.mjs      # 静态模型表 + 目录解析 + models.dev limits
-test/                # node:test，mock fetch，不打真网
+index.mjs            # entry: FreePiPlugin (the only plugin export) + _internal
+lib/upstream.mjs     # upstream contract: constants/version pin/headers/device flow/ad gate
+lib/catalog.mjs      # static model table + catalog parsing + models.dev limits
+test/                # node:test with mocked fetch, no real network
 ```
 
 ## License
