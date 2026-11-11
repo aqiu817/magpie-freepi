@@ -17,12 +17,13 @@
 ## 安装
 
 ```sh
-magpie plugin add github:aqiu817/magpie-freepi   # 或本地文件夹路径
+magpie plugin add magpie-freepi-auth              # 从 npm
+magpie plugin add github:aqiu817/magpie-freepi    # 或从 GitHub，或本地文件夹路径
 magpie plugin login freepi                        # 浏览器完成 GitHub 设备码授权
 magpie provider test freepi
 ```
 
-应用内：插件 → 添加插件 → 填入路径/仓库名 → 在 freepi 行登录。
+应用内：插件 → 添加插件 → 填入包名/仓库/路径 → 在 freepi 行登录。
 
 ## 模型
 
